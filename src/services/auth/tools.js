@@ -22,7 +22,7 @@ const authenticate = async user => {
 const generateAccessToken = payload =>
     new Promise((res, rej) => 
         jwt.sign(payload, process.env.JWT_SECRET,
-        { expiresIn: "15m" }, (error, token) => {
+        { expiresIn: "1h" }, (error, token) => {
             if (error) rej(error)
             res(token)
         }))
@@ -30,7 +30,7 @@ const generateAccessToken = payload =>
 const generateRefreshToken = payload =>
     new Promise((res, rej) => 
         jwt.sign(payload, process.env.REFRESH_JWT_SECRET,
-        { expiresIn: "1h" }, (error, token) => {
+        { expiresIn: "1w" }, (error, token) => {
             if (error) rej(error)
             res(token)
         }))
@@ -51,6 +51,29 @@ const verifyRefreshToken = token =>
         })
     })
 
+const refreshToken = async oldRefreshToken => {
+    const decoded = await verifyRefreshToken(oldRefreshToken)
+    const user = await user.findOne({ _id: decoded._id })
+    
+    if (!user) {
+        throw new Error("no user found")
+    }
 
-module.exports = {authenticate, verifyAccessToken}
+    const currentRefreshToken = user.refreshTokens.find(
+        t=>t.token ===oldRefreshToken)
+
+    if (!currentRefreshToken) { throw new Error("enter refresh token") }
+
+    const newAccessToken = await generateAccessToken({ _id: user._id })
+    const newRefreshToken = await generateRefreshToken({ _id: user._id })
+
+    const newRefreshTokens = user.refreshTokens.filter(
+        t => t.token != oldRefreshToken).concat({ token: newRefreshToken })
+    
+    user.refreshTokens = [...newRefreshTokens]
+    await user.save()
+    return {token:newAccessToken, refreshToken:newRefreshToken}
+}
+
+module.exports = {authenticate, verifyAccessToken, refreshToken}
 
