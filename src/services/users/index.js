@@ -6,6 +6,23 @@ const {authorize, authorize_city, adminOnly} = require("../auth/middleware")
 
 const usersRouter = express.Router();
 
+
+//-----------GET ROUTE
+usersRouter.get("/me/weather", authorize, async (req, res, next) => {
+    
+
+ try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}?q=${city},${state},${code}&appid=${process.env.REACT_APP_API_KEY}`
+      );
+     let data = await response.json();
+         } catch (error) {
+      console.log(error);
+    }
+  }
+     )
+
+
 //-----------REGISTER + LOGIN + TOKEN ROUTES
 usersRouter.post("/signup", async (req, res, next) => {
     try {
