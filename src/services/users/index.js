@@ -13,12 +13,21 @@ usersRouter.get("/me/weather", authorize, async (req, res, next) => {
 
  try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}?q=${city},${state},${code}&appid=${process.env.REACT_APP_API_KEY}`
+        `${process.env.API_URL}?q=${city},${state},${code}&appid=${process.env.API_KEY}`
       );
      let data = await response.json();
          } catch (error) {
       console.log(error);
-    }
+ }
+    /* axios
+				.request(options)
+				.then(function (response) {
+					console.log(response.data)
+					res.send(response.data)
+				})
+				.catch(function (error) {
+					console.error(error)
+				}) */
   }
      )
 
