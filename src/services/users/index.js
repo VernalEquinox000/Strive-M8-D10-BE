@@ -11,22 +11,38 @@ const usersRouter = express.Router();
 usersRouter.get("/me/weather", authorize, async (req, res, next) => {
     
 
-try {
-    let options = {
-        method: "GET",
-        url: `${process.env.API_URL}?q=london&appid=${process.env.API_KEY}`
-         //`${process.env.API_URL}?q=${city},${state},${code}&appid=${process.env.API_KEY}`
-    }
-    axios.request(options)
-				.then(function (response) {
-					console.log(response.data)
-					res.send(response.data)
-				})
-				.catch(function (error) {
-					console.error(error)
-				})
-
-    res.send(data)
+    try {
+        if (req.query && req.query.city) {
+            let options = {
+                method: "GET",
+                url: `${process.env.API_URL}?q=${req.query.city},${req.query.state},${req.query.code}&appid=${process.env.API_KEY}`
+                //`${process.env.API_URL}?q=${city},${state},${code}&appid=${process.env.API_KEY}`
+            }
+            axios.request(options)
+                .then(function (response) {
+                    console.log(response.data)
+                    res.send(response.data)
+                })
+                .catch(function (error) {
+                    console.error(error)
+                })
+        } else {
+            let options = {
+                method: "GET",
+                url: `${process.env.API_URL}?q=london&appid=${process.env.API_KEY}`
+                //`${process.env.API_URL}?q=${city},${state},${code}&appid=${process.env.API_KEY}`
+            }
+            console.log(req.user.cities[0].name.value)
+            axios.request(options)
+                .then(function (response) {
+                    
+                    console.log("HHHHEREEE",response.data)
+                    res.send(response.data)
+                })
+                .catch(function (error) {
+                    console.error(error)
+                })
+        }
          } catch (error) {
       console.log(error);
  }
