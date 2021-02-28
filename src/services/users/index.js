@@ -1,5 +1,5 @@
 const express = require("express");
-
+const axios = require("axios").default
 const usersModel = require("./schema")
 const { authenticate, refreshToken} = require("../auth/tools")
 const {authorize, authorize_city, adminOnly} = require("../auth/middleware")
@@ -11,14 +11,26 @@ const usersRouter = express.Router();
 usersRouter.get("/me/weather", authorize, async (req, res, next) => {
     
 
- try {
-      const response = await fetch(
-        `${process.env.API_URL}?q=${city},${state},${code}&appid=${process.env.API_KEY}`
-      );
-     let data = await response.json();
+try {
+    let options = {
+        method: "GET",
+        url: `${process.env.API_URL}?q=london&appid=${process.env.API_KEY}`
+         //`${process.env.API_URL}?q=${city},${state},${code}&appid=${process.env.API_KEY}`
+    }
+    axios.request(options)
+				.then(function (response) {
+					console.log(response.data)
+					res.send(response.data)
+				})
+				.catch(function (error) {
+					console.error(error)
+				})
+
+    res.send(data)
          } catch (error) {
       console.log(error);
  }
+    
     /* axios
 				.request(options)
 				.then(function (response) {
