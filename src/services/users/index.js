@@ -27,18 +27,23 @@ usersRouter.get("/me/weather", authorize, async (req, res, next) => {
                     console.error(error)
                 })
         } else {
+            let cities = req.user.cities
             let options = {
                 method: "GET",
-                url: `${process.env.API_URL}?q=london&appid=${process.env.API_KEY}`
+                url: `${process.env.API_URL}?q=${cities[0].name}&appid=${process.env.API_KEY}`
                 //`${process.env.API_URL}?q=${city},${state},${code}&appid=${process.env.API_KEY}`
             }
-            console.log(req.user.cities[0].name.value)
+            //console.log(req.user.cities[0].name)
             axios.request(options)
                 .then(function (response) {
                     
-                    console.log("HHHHEREEE",response.data)
+                    //console.log("HHHHEREEE",response.data)
                     res.send(response.data)
+                    //responses.push(response.data)
+                    //console.log(responses)
                 })
+
+                
                 .catch(function (error) {
                     console.error(error)
                 })
